@@ -3,6 +3,7 @@ from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 import time
 import importlib
+import logging
 
 aws = importlib.import_module("aws")
 
@@ -19,7 +20,6 @@ def start_daemon(path):
     ev_handler.on_modified = on_modified
     ev_handler.on_moved = on_moved
 
-
     # Observer
     go_recursively = True
     observer = Observer()
@@ -27,20 +27,24 @@ def start_daemon(path):
 
     observer.start()
     try:
+        download()
         while True:
             time.sleep(5)
     except:
-        print("Stopping observer")
+        logging.info("Stopping observer")
 
+def download():
+    aws.download()
+        
 def on_created(event):
-    print(event)
-    aws.sync(event.src_path)
+    logging.info(event)
+    aws.upload(event.src_path)
     
 def on_deleted(event):
-    print(event)
+    logging.info(event)
 
 def on_modified(event):
-    print(event)
+    logging.info(event)
 
 def on_moved(event):
-    print(event)
+    logging.info(event)

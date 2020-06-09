@@ -4,7 +4,10 @@ from botocore.exceptions import ClientError
 
 s3 = boto3.resource('s3')
 
-def sync(filename, object_name=None):
+def download():
+    logging.info("")
+
+def upload(filename, object_name=None):
     if object_name is None:
         object_name = filename
 
@@ -12,10 +15,10 @@ def sync(filename, object_name=None):
     try:
         for bucket in s3.buckets.all():
             if "ifolder" in bucket.name:
-                print(f"Found iFolder bucket on s3")
+                logging.info(f"Found iFolder bucket on s3")
                 response = client.upload_file(filename, bucket.name, object_name)
             else:
-                print(bucket)
+                logging.info(bucket)
 
     except ClientError as e:
         logging.error(f"Failed to upload: {filename} | {e}")
